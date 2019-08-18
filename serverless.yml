@@ -1,0 +1,71 @@
+service: gorkin
+
+frameworkVersion: ">=1.28.0 <2.0.0"
+
+# Service Description
+provider:
+  name: aws
+  runtime: go1.x
+  memorySize: 128
+  timeout: 5
+
+  region: us-east-1
+  environment:
+    TABLE_NAME: features-${opt:stage, self:provider.stage}
+  
+  # IAM Roles
+  iamRoleStatements:
+    #Features DynamoDB Table
+    - Effect: "Allow"
+      Action:
+        - dynamodb:DescribeTable
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+      Resource:
+        - Fn::GetAtt:
+          - FeaturesDynamoDBTable
+          - Arn
+
+# Package information
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+# Functions
+functions:
+  getFeatures:
+    handler: bin/getFeatures
+    events:
+      - http:
+        path: features
+        method: get
+        cors: true
+
+
+# Resources
+resources:
+  Resources:
+    FeaturesDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: name
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapaciteUnits: 1
+        TableName: 'features-${opt:stage, self:provider.stage}'
