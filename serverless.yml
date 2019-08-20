@@ -19,12 +19,12 @@ provider:
     - Effect: "Allow"
       Action:
         - dynamodb:DescribeTable
-          - dynamodb:Query
-          - dynamodb:Scan
-          - dynamodb:GetItem
-          - dynamodb:PutItem
-          - dynamodb:UpdateItem
-          - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
       Resource:
         - Fn::GetAtt:
           - FeaturesDynamoDBTable
@@ -43,9 +43,9 @@ functions:
     handler: bin/getFeatures
     events:
       - http:
-        path: features
-        method: get
-        cors: true
+          path: features
+          method: get
+          cors: true
 
 
 # Resources
@@ -67,5 +67,5 @@ resources:
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
-          WriteCapaciteUnits: 1
+          WriteCapacityUnits: 1
         TableName: 'features-${opt:stage, self:provider.stage}'
