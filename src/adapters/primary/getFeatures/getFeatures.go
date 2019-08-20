@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"bytes"
+	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
 )
@@ -31,19 +33,29 @@ type Response events.APIGatewayProxyResponse
 func (a *getFeaturesAdapter) Handle(request events.APIGatewayProxyRequest) (Response, error) {
 	result := a.service.GetAll()
 	fmt.Println("result:", result)
-	return successfulResponse(), nil
-}
 
-func successfulResponse() Response {
-	return Response{
+	body, err := json.Marshal(result)
+
+	if err != nil {
+		return Response{StatusCode: 400}, err
+	}
+
+	var buf bytes.Buffer
+	json.HTMLEscape(&buf, body)
+
+	
+	resp := Response{
 		StatusCode:      200,
 		IsBase64Encoded: false,
+		Body:            buf.String(),
 		Headers: map[string]string{
 			"Content-Type":                     "application/json",
 			"Access-Control-Allow-Credentials": "true",
 			"Access-Control-Allow-Origin":      "*",
-			"Access-Control-Allow-Methods":     "POST",
+			"Access-Control-Allow-Methods":     "GET",
 			"Access-Control-Allow-Headers":     "application/json",
 		},
 	}
+
+	return resp, nil
 }
