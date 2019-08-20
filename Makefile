@@ -1,7 +1,7 @@
 .PHONY: build clean deploy
 
 build:
-	env GO111MODULE=on GOOS=linux go build -ldflags="-s -w" -o bin/getFeatures adapters/primary/getFeatures/*
+	env GO111MODULE=on GOOS=linux go build -ldflags="-s -w" -o bin/getFeatures src/adapters/primary/getFeatures/*
 
 test: 
 	env GO111MODULE=on go test ./... -cover
