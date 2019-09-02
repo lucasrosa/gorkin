@@ -1,5 +1,22 @@
 package feature
 
+type objectPort struct {
+	repo ObjectSecondaryPort
+}
+
+func NewFolderService(repo ObjectSecondaryPort) FolderPrimaryPort {
+	return &objectPort{
+		repo,
+	}
+}
+
+func(objectport *objectPort) GetAll() []Folder {
+	return objectport.repo.GetAll()
+}
+
+
+
+// To be deprecated...
 type dbPort struct {
 	repo DatabaseSecondaryPort
 }

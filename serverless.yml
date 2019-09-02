@@ -2,6 +2,9 @@ service: gorkin
 
 frameworkVersion: ">=1.28.0 <2.0.0"
 
+custom:
+  bucket: gorkin-features-dev
+
 # Service Description
 provider:
   name: aws
@@ -11,24 +14,13 @@ provider:
 
   region: us-east-1
   environment:
-    TABLE_NAME: features-${opt:stage, self:provider.stage}
-  
-  # IAM Roles
+    BUCKET_NAME: gorkin-features-${opt:stage, self:provider.stage}
   iamRoleStatements:
-    #Features DynamoDB Table
-    - Effect: "Allow"
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource:
-        - Fn::GetAtt:
-          - FeaturesDynamoDBTable
-          - Arn
+    - Effect: Allow
+      Action: 
+        - s3:*
+      #Resource: "arn:aws:s3:::gorkin-features-${opt:stage, self:provider.stage}/*"
+      Resource: "arn:aws:s3:::${self:custom.bucket}"
 
 # Package information
 package:
@@ -39,11 +31,11 @@ package:
 
 # Functions
 functions:
-  getFeatures:
-    handler: bin/getFeatures
+  getFolders:
+    handler: bin/getFolders
     events:
       - http:
-          path: features
+          path: folders
           method: get
           cors: true
 
@@ -51,21 +43,8 @@ functions:
 # Resources
 resources:
   Resources:
-    FeaturesDynamoDBTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+    FeaturesS3Bucket:
+      Type: AWS::S3::Bucket
       Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: name
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: name
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: 'features-${opt:stage, self:provider.stage}'
+        #BucketName: 'gorkin-features-${opt:stage, self:provider.stage}'
+        BucketName: ${self:custom.bucket}
