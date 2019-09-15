@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Gorkin
+Resources:
+  getFolders:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: bin/getFolders
+      Runtime: go1.x
+      Events:
+        Vote:
+          Type: Api
+          Properties:
+            Path: /folders
+            Method: get
