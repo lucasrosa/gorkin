@@ -10,11 +10,9 @@ func NewFolderService(repo ObjectSecondaryPort) FolderPrimaryPort {
 	}
 }
 
-func(objectport *objectPort) GetAll() []Folder {
-	return objectport.repo.GetAll()
+func (objectport *objectPort) GetAll(folder string) []Folder {
+	return objectport.repo.GetAll(folder)
 }
-
-
 
 // To be deprecated...
 type dbPort struct {
@@ -27,6 +25,6 @@ func NewService(repo DatabaseSecondaryPort) FeaturePrimaryPort {
 	}
 }
 
-func(dbport *dbPort) GetAll() []Feature {
+func (dbport *dbPort) GetAll() []Feature {
 	return dbport.repo.GetAll()
 }

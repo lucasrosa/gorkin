@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"bytes"
 	"encoding/json"
+	"fmt"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
 )
@@ -31,7 +32,9 @@ type Response events.APIGatewayProxyResponse
 
 // PlaceOrder receives the request, processes it and returns a Response or an error
 func (a *getFoldersAdapter) Handle(request events.APIGatewayProxyRequest) (Response, error) {
-	result := a.service.GetAll()
+	folder := request.QueryStringParameters["folder"]
+	result := a.service.GetAll(folder)
+
 	fmt.Println("result:", result)
 
 	body, err := json.Marshal(result)
@@ -43,7 +46,6 @@ func (a *getFoldersAdapter) Handle(request events.APIGatewayProxyRequest) (Respo
 	var buf bytes.Buffer
 	json.HTMLEscape(&buf, body)
 
-	
 	resp := Response{
 		StatusCode:      200,
 		IsBase64Encoded: false,

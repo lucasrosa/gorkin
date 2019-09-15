@@ -2,9 +2,6 @@ service: gorkin
 
 frameworkVersion: ">=1.28.0 <2.0.0"
 
-custom:
-  bucket: gorkin-features-dev
-
 # Service Description
 provider:
   name: aws
@@ -19,8 +16,8 @@ provider:
     - Effect: Allow
       Action: 
         - s3:*
-      #Resource: "arn:aws:s3:::gorkin-features-${opt:stage, self:provider.stage}/*"
-      Resource: "arn:aws:s3:::${self:custom.bucket}"
+      Resource: "arn:aws:s3:::gorkin-features-${opt:stage, self:provider.stage}"
+      #Resource: "arn:aws:s3:::${self:custom.bucket}"
 
 # Package information
 package:
@@ -46,5 +43,5 @@ resources:
     FeaturesS3Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        #BucketName: 'gorkin-features-${opt:stage, self:provider.stage}'
-        BucketName: ${self:custom.bucket}
+        BucketName: 'gorkin-features-${opt:stage, self:provider.stage}'
+        #BucketName: ${self:custom.bucket}
