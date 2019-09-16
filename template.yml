@@ -7,6 +7,9 @@ Resources:
     Properties:
       Handler: bin/getFolders
       Runtime: go1.x
+      Environment:
+        Variables:
+          BUCKET_NAME: gorkin-features-dev
       Events:
         Vote:
           Type: Api
