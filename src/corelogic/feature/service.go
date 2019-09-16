@@ -10,8 +10,8 @@ func NewFolderService(repo ObjectSecondaryPort) FolderPrimaryPort {
 	}
 }
 
-func (objectport *objectPort) GetAll(folder string) []Folder {
-	return objectport.repo.GetAll(folder)
+func (objectport *objectPort) GetAll(folder string) (Folder, error) {
+	return objectport.repo.ListObjects(folder)
 }
 
 // To be deprecated...
