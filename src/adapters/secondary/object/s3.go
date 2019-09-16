@@ -8,8 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-
-	// "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
 )
 
@@ -33,6 +31,25 @@ func newS3Session() (*s3.S3, error) {
 	return s3.New(sess), nil
 }
 
+func listChildren(objects *s3.ListObjectsV2Output, folderName string) []string {
+	var children []string
+
+	// Get all folders
+	for _, doc := range objects.CommonPrefixes {
+		children = append(children, *doc.Prefix)
+	}
+
+	// Get all files
+	for _, doc := range objects.Contents {
+		// S3 lists the folder itself, so we have to remove it from the list
+		if *doc.Key != folderName {
+			children = append(children, *doc.Key)
+		}
+	}
+
+	return children
+}
+
 // ListObjects lists all items inside a given folder in AWS S3
 func (r *folderRepository) ListObjects(folder string) (feature.Folder, error) {
 	fmt.Println("Folder ListObjects started, looking into bucket:", os.Getenv("BUCKET_NAME"))
@@ -53,8 +70,6 @@ func (r *folderRepository) ListObjects(folder string) (feature.Folder, error) {
 		input.SetPrefix(folder)
 	}
 
-	var children []string
-
 	result, err := svc.ListObjectsV2(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
@@ -72,17 +87,7 @@ func (r *folderRepository) ListObjects(folder string) (feature.Folder, error) {
 		return feature.Folder{}, err
 	}
 
-	// Get all folders
-	for _, doc := range result.CommonPrefixes {
-		children = append(children, *doc.Prefix)
-	}
-
-	// Get all files
-	for _, doc := range result.Contents {
-		if *doc.Key != folder {
-			children = append(children, *doc.Key)
-		}
-	}
+	children := listChildren(result, folder)
 
 	myFolder := feature.Folder{
 		Children: children,
