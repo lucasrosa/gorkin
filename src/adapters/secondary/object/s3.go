@@ -5,17 +5,30 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
 )
 
-type folderRepository struct{}
+type s3i interface {
+	ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error)
+}
+
+type folderRepository struct {
+	awss3 s3i
+}
 
 // NewS3FolderRepository instantiates the repository for this adapter
-func NewS3FolderRepository() feature.ObjectSecondaryPort {
-	return &folderRepository{}
+func NewS3FolderRepository() (feature.ObjectSecondaryPort, error) {
+	svc, err := newS3Session()
+
+	if err != nil {
+		return &folderRepository{}, err
+	}
+
+	return &folderRepository{
+		svc,
+	}, nil
 }
 
 func newS3Session() (*s3.S3, error) {
@@ -31,6 +44,8 @@ func newS3Session() (*s3.S3, error) {
 	return s3.New(sess), nil
 }
 
+// listChildren just gets the CommonPrefixes (folders) and Contents (files)
+// and returns them as a list of strings
 func listChildren(objects *s3.ListObjectsV2Output, folderName string) []string {
 	var children []string
 
@@ -52,12 +67,6 @@ func listChildren(objects *s3.ListObjectsV2Output, folderName string) []string {
 
 // ListObjects lists all items inside a given folder in AWS S3
 func (r *folderRepository) ListObjects(folder string) (feature.Folder, error) {
-	fmt.Println("Folder ListObjects started, looking into bucket:", os.Getenv("BUCKET_NAME"))
-
-	svc, err := newS3Session()
-	if err != nil {
-		return feature.Folder{}, err
-	}
 
 	input := &s3.ListObjectsV2Input{
 		Bucket:    aws.String(os.Getenv("BUCKET_NAME")),
@@ -70,20 +79,9 @@ func (r *folderRepository) ListObjects(folder string) (feature.Folder, error) {
 		input.SetPrefix(folder)
 	}
 
-	result, err := svc.ListObjectsV2(input)
+	result, err := r.awss3.ListObjectsV2(input)
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			switch aerr.Code() {
-			case s3.ErrCodeNoSuchBucket:
-				fmt.Println("1:", s3.ErrCodeNoSuchBucket, aerr.Error())
-			default:
-				fmt.Println("2:", aerr.Error())
-			}
-		} else {
-			// Cast err to awserr.Error to get the Code and Message from an error.
-			fmt.Println("3:", err.Error())
-		}
-
+		fmt.Println("Error while trying to list objects from S3:", err.Error())
 		return feature.Folder{}, err
 	}
 
