@@ -32,8 +32,8 @@ type Response events.APIGatewayProxyResponse
 
 // PlaceOrder receives the request, processes it and returns a Response or an error
 func (a *getFoldersAdapter) Handle(request events.APIGatewayProxyRequest) (Response, error) {
-	folder := request.QueryStringParameters["folder"]
-	result, err := a.service.GetAll(folder)
+	//folder := request.QueryStringParameters["folder"]
+	result, err := a.service.GetAll()
 
 	if err != nil {
 		return Response{StatusCode: 500}, err

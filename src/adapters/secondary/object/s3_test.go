@@ -28,6 +28,7 @@ func TestListChildrenWithNoItems(t *testing.T) {
 
 type s3Mock struct{}
 
+// ListObjectsV2 returns an object with 2 folders and 2 files
 func (s *s3Mock) ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error) {
 	prefix := "folder1"
 	prefix2 := "folder2"
@@ -80,6 +81,7 @@ func TestListObjects(t *testing.T) {
 
 type s3MockWithError struct{}
 
+// ListObjectsV2 returns an error
 func (s *s3MockWithError) ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error) {
 	err := errors.New("Mock returning error")
 	return &s3.ListObjectsV2Output{}, err

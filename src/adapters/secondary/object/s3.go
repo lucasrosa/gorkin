@@ -3,6 +3,7 @@ package s3
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -92,4 +93,52 @@ func (r *folderRepository) ListObjects(folder string) (feature.Folder, error) {
 	}
 
 	return myFolder, nil
+}
+
+func (r *folderRepository) ListAllObjects() (feature.Object, error) {
+	input := &s3.ListObjectsV2Input{
+		Bucket:  aws.String(os.Getenv("BUCKET_NAME")),
+		MaxKeys: aws.Int64(1000),
+		//Delimiter: aws.String("/"),
+		//Prefix:    aws.String(""),
+	}
+
+	result, err := r.awss3.ListObjectsV2(input)
+	if err != nil {
+		fmt.Println("Error while trying to list objects from S3:", err.Error())
+		return feature.Object{}, err
+	}
+	rootObject := ConvertToRecursiveObject(result.Contents)
+	fmt.Println("rootObject")
+	fmt.Println(rootObject)
+
+	fmt.Println("result")
+	fmt.Println(result)
+
+	myFolder := feature.Object{}
+
+	return myFolder, nil
+}
+
+func ConvertToRecursiveObject(objects []*s3.Object) feature.Object {
+	rootObject := feature.Object{}
+	for _, s3Object := range objects {
+
+		if strings.Contains(*s3Object.Key, "/") {
+			components := strings.Split(*s3Object.Key, "/")
+			rootObject.Children = append(rootObject.Children, feature.Object{
+				ID:   *s3Object.ETag,
+				Name: components[0],
+				Type: "folder",
+			})
+		} else {
+			rootObject.Children = append(rootObject.Children, feature.Object{
+				ID:   *s3Object.ETag,
+				Name: *s3Object.Key,
+				Type: "file",
+			})
+		}
+	}
+
+	return rootObject
 }

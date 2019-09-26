@@ -7,7 +7,8 @@ type FeaturePrimaryPort interface {
 
 // FolderPrimaryPort is the entrypoint for the folders
 type FolderPrimaryPort interface {
-	GetAll(folder string) (Folder, error)
+	GetAll() (Object, error)
+	Get(folder string) (Folder, error)
 }
 
 // DatabaseSecondaryPort is the way the business rules communicate to the external world
@@ -16,5 +17,6 @@ type DatabaseSecondaryPort interface {
 }
 
 type ObjectSecondaryPort interface {
-	ListObjects(folder string) (Folder, error)
+	ListAllObjects() (Object, error)
+	ListObjects(fodler string) (Folder, error)
 }
