@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -108,9 +109,13 @@ func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 		fmt.Println("Error while trying to list objects from S3:", err.Error())
 		return feature.Object{}, err
 	}
-	rootObject := ConvertToRecursiveObject(result.Contents)
+	treeObject := convertToTreeObject(result.Contents)
+	fmt.Println("treeObject")
+	fmt.Println(treeObject)
+
+	rootObject, _ := json.Marshal(treeObject)
 	fmt.Println("rootObject")
-	fmt.Println(rootObject)
+	fmt.Println(string(rootObject))
 
 	fmt.Println("result")
 	fmt.Println(result)
@@ -120,23 +125,48 @@ func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 	return myFolder, nil
 }
 
-func ConvertToRecursiveObject(objects []*s3.Object) feature.Object {
+func addChild(rootObject *feature.Object, child string, grandchildren []string) {
+
+	if rootObject.Children == nil {
+		rootObject.Children = make(map[string]*feature.Object)
+	}
+
+	if len(grandchildren) == 0 {
+		if child != "" { // If the string is a folder, it will end in "/", and the last item in the split will be an empty string
+			if _, ok := rootObject.Children[child]; !ok {
+				rootObject.Children[child] = &feature.Object{
+					//ID:   *s3Object.ETag,
+					Name: child,
+					Type: "file",
+				}
+			}
+		}
+	} else {
+		if _, ok := rootObject.Children[child]; !ok {
+			rootObject.Children[child] = &feature.Object{
+				//ID:   *s3Object.ETag,
+				Name: child,
+				Type: "folder",
+			}
+		}
+
+		addChild(rootObject.Children[child], grandchildren[:1][0], grandchildren[1:])
+	}
+}
+
+func convertToTreeObject(objects []*s3.Object) feature.Object {
 	rootObject := feature.Object{}
 	for _, s3Object := range objects {
-
+		fmt.Println("\n-- ", *s3Object.Key)
 		if strings.Contains(*s3Object.Key, "/") {
 			components := strings.Split(*s3Object.Key, "/")
-			rootObject.Children = append(rootObject.Children, feature.Object{
-				ID:   *s3Object.ETag,
-				Name: components[0],
-				Type: "folder",
-			})
+			addChild(&rootObject, components[0], components[1:])
 		} else {
-			rootObject.Children = append(rootObject.Children, feature.Object{
+			rootObject.Children[*s3Object.Key] = &feature.Object{
 				ID:   *s3Object.ETag,
 				Name: *s3Object.Key,
 				Type: "file",
-			})
+			}
 		}
 	}
 
