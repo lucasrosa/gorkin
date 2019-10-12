@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
@@ -30,16 +29,12 @@ func NewGetFoldersAdapter(service feature.FolderPrimaryPort) GetFoldersAdapter {
 // https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
 type Response events.APIGatewayProxyResponse
 
-// PlaceOrder receives the request, processes it and returns a Response or an error
 func (a *getFoldersAdapter) Handle(request events.APIGatewayProxyRequest) (Response, error) {
-	//folder := request.QueryStringParameters["folder"]
 	result, err := a.service.GetAll()
 
 	if err != nil {
 		return Response{StatusCode: 500}, err
 	}
-
-	fmt.Println("result:", result)
 
 	body, err := json.Marshal(result)
 

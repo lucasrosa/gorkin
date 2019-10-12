@@ -70,35 +70,6 @@ func listChildren(objects *s3.ListObjectsV2Output, folderName string) []string {
 	return children
 }
 
-// ListObjects lists all items inside a given folder in AWS S3
-func (r *folderRepository) ListObjects(folder string) (feature.Folder, error) {
-
-	input := &s3.ListObjectsV2Input{
-		Bucket:    aws.String(os.Getenv("BUCKET_NAME")),
-		MaxKeys:   aws.Int64(128),
-		Delimiter: aws.String("/"),
-	}
-
-	// If there is no folder, leave the Prefix empty so S3 lists the root folders
-	if folder != "" {
-		input.SetPrefix(folder)
-	}
-
-	result, err := r.awss3.ListObjectsV2(input)
-	if err != nil {
-		fmt.Println("Error while trying to list objects from S3:", err.Error())
-		return feature.Folder{}, err
-	}
-
-	children := listChildren(result, folder)
-
-	myFolder := feature.Folder{
-		Children: children,
-	}
-
-	return myFolder, nil
-}
-
 func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 	input := &s3.ListObjectsV2Input{
 		Bucket:  aws.String(os.Getenv("BUCKET_NAME")),

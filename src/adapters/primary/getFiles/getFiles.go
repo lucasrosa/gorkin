@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
@@ -30,11 +29,9 @@ func NewGetFilesAdapter(service feature.FilesPrimaryPort) GetFilesAdapter {
 // https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
 type Response events.APIGatewayProxyResponse
 
-// PlaceOrder receives the request, processes it and returns a Response or an error
 func (a *getFilesAdapter) Handle(request events.APIGatewayProxyRequest) (Response, error) {
 	key := request.QueryStringParameters["key"]
 
-	fmt.Println("key", key)
 	result, err := a.service.Get(key)
 
 	if err != nil {

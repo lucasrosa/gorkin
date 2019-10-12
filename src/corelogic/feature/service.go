@@ -24,10 +24,6 @@ func (foldersprimaryport *foldersPrimaryPort) GetAll() (Object, error) {
 	return foldersprimaryport.repo.ListAllObjects()
 }
 
-func (foldersprimaryport *foldersPrimaryPort) Get(folder string) (Folder, error) {
-	return foldersprimaryport.repo.ListObjects(folder)
-}
-
 func (filesprimaryport *filesPrimaryPort) Get(key string) (string, error) {
 	return filesprimaryport.repo.GetObjectTemporaryURL(key)
 }
