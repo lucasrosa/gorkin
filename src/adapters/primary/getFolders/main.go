@@ -16,9 +16,9 @@ func Handler(request events.APIGatewayProxyRequest) (Response, error) {
 	fmt.Println("request Authorization:")
 	fmt.Println(request.Headers["Authorization"])
 
-	if !isAuthenticated(request.Headers["Authorization"]) {
-		return Response{StatusCode: 401}, nil
-	}
+	// if !isAuthenticated(request.Headers["Authorization"]) {
+	// 	return Response{StatusCode: 401}, nil
+	// }
 	repo, err := s3.NewS3FolderRepository()
 
 	if err != nil {
