@@ -1,7 +1,6 @@
 package s3
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -100,8 +99,6 @@ func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 	input := &s3.ListObjectsV2Input{
 		Bucket:  aws.String(os.Getenv("BUCKET_NAME")),
 		MaxKeys: aws.Int64(1000),
-		//Delimiter: aws.String("/"),
-		//Prefix:    aws.String(""),
 	}
 
 	result, err := r.awss3.ListObjectsV2(input)
@@ -110,60 +107,52 @@ func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 		return feature.Object{}, err
 	}
 	treeObject := convertToTreeObject(result.Contents)
-	fmt.Println("treeObject")
-	fmt.Println(treeObject)
 
-	rootObject, _ := json.Marshal(treeObject)
-	fmt.Println("rootObject")
-	fmt.Println(string(rootObject))
-
-	fmt.Println("result")
-	fmt.Println(result)
-
-	myFolder := feature.Object{}
-
-	return myFolder, nil
+	return treeObject, nil
 }
 
-func addChild(rootObject *feature.Object, child string, grandchildren []string) {
-
+func addChild(rootObject *feature.Object, id string, child string, grandchildren []string) {
 	if rootObject.Children == nil {
 		rootObject.Children = make(map[string]*feature.Object)
 	}
 
 	if len(grandchildren) == 0 {
 		if child != "" { // If the string is a folder, it will end in "/", and the last item in the split will be an empty string
-			if _, ok := rootObject.Children[child]; !ok {
+			if _, ok := rootObject.Children[child]; !ok { // Checks if this position in the array exists
 				rootObject.Children[child] = &feature.Object{
-					//ID:   *s3Object.ETag,
+					ID:   id,
 					Name: child,
 					Type: "file",
 				}
+			} else if rootObject.Children[child].ID == "" {
+				rootObject.Children[child].ID = id
 			}
 		}
 	} else {
-		if _, ok := rootObject.Children[child]; !ok {
+		if _, ok := rootObject.Children[child]; !ok { // Checks if this position in the array exists
 			rootObject.Children[child] = &feature.Object{
-				//ID:   *s3Object.ETag,
+				ID:   id,
 				Name: child,
 				Type: "folder",
 			}
+		} else if rootObject.Children[child].ID == "" {
+			rootObject.Children[child].ID = id
 		}
 
-		addChild(rootObject.Children[child], grandchildren[:1][0], grandchildren[1:])
+		addChild(rootObject.Children[child], id, grandchildren[:1][0], grandchildren[1:])
 	}
 }
 
 func convertToTreeObject(objects []*s3.Object) feature.Object {
-	rootObject := feature.Object{}
+	rootObject := feature.Object{ID: "root", Name: "root", Type: "folder"}
 	for _, s3Object := range objects {
-		fmt.Println("\n-- ", *s3Object.Key)
+		etag := strings.ReplaceAll(*s3Object.ETag, "\"", "")
 		if strings.Contains(*s3Object.Key, "/") {
 			components := strings.Split(*s3Object.Key, "/")
-			addChild(&rootObject, components[0], components[1:])
+			addChild(&rootObject, etag, components[0], components[1:])
 		} else {
 			rootObject.Children[*s3Object.Key] = &feature.Object{
-				ID:   *s3Object.ETag,
+				ID:   etag,
 				Name: *s3Object.Key,
 				Type: "file",
 			}
