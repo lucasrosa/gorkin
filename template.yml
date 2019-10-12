@@ -16,3 +16,17 @@ Resources:
           Properties:
             Path: /folders
             Method: get
+  getFiles:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: bin/getFiles
+      Runtime: go1.x
+      Environment:
+        Variables:
+          BUCKET_NAME: gorkin-features-dev
+      Events:
+        Vote:
+          Type: Api
+          Properties:
+            Path: /files
+            Method: get

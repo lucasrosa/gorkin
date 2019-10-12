@@ -1,21 +1,35 @@
 package feature
 
-type objectPort struct {
+type foldersPrimaryPort struct {
+	repo ObjectSecondaryPort
+}
+
+type filesPrimaryPort struct {
 	repo ObjectSecondaryPort
 }
 
 func NewFolderService(repo ObjectSecondaryPort) FolderPrimaryPort {
-	return &objectPort{
+	return &foldersPrimaryPort{
 		repo,
 	}
 }
 
-func (objectport *objectPort) GetAll() (Object, error) {
-	return objectport.repo.ListAllObjects()
+func NewFilesService(repo ObjectSecondaryPort) FilesPrimaryPort {
+	return &filesPrimaryPort{
+		repo,
+	}
 }
 
-func (objectport *objectPort) Get(folder string) (Folder, error) {
-	return objectport.repo.ListObjects(folder)
+func (foldersprimaryport *foldersPrimaryPort) GetAll() (Object, error) {
+	return foldersprimaryport.repo.ListAllObjects()
+}
+
+func (foldersprimaryport *foldersPrimaryPort) Get(folder string) (Folder, error) {
+	return foldersprimaryport.repo.ListObjects(folder)
+}
+
+func (filesprimaryport *filesPrimaryPort) Get(id string) (string, error) {
+	return filesprimaryport.repo.GetObjectTemporaryURL(id)
 }
 
 // To be deprecated...

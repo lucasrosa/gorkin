@@ -11,6 +11,11 @@ type FolderPrimaryPort interface {
 	Get(folder string) (Folder, error)
 }
 
+// FilesPrimaryPort is the entrypoint for the files
+type FilesPrimaryPort interface {
+	Get(id string) (string, error)
+}
+
 // DatabaseSecondaryPort is the way the business rules communicate to the external world
 type DatabaseSecondaryPort interface {
 	GetAll() []Feature
@@ -19,4 +24,5 @@ type DatabaseSecondaryPort interface {
 type ObjectSecondaryPort interface {
 	ListAllObjects() (Object, error)
 	ListObjects(fodler string) (Folder, error)
+	GetObjectTemporaryURL(id string) (string, error)
 }

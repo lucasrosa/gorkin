@@ -2,10 +2,13 @@ package s3
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
@@ -13,6 +16,7 @@ import (
 
 type s3i interface {
 	ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error)
+	GetObjectRequest(input *s3.GetObjectInput) (req *request.Request, output *s3.GetObjectOutput)
 }
 
 type folderRepository struct {
@@ -109,6 +113,21 @@ func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 	treeObject := convertToTreeObject(result.Contents)
 
 	return treeObject, nil
+}
+
+func (r *folderRepository) GetObjectTemporaryURL(id string) (string, error) {
+	req, _ := r.awss3.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(os.Getenv("BUCKET_NAME")),
+		Key:    aws.String(id),
+	})
+
+	urlStr, err := req.Presign(15 * time.Minute)
+
+	if err != nil {
+		log.Println("Failed to sign request for object", id, "error:", err)
+	}
+
+	return urlStr, nil
 }
 
 func addChild(rootObject *feature.Object, id string, child string, grandchildren []string) {

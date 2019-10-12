@@ -35,6 +35,17 @@ functions:
           path: folders
           method: get
           cors: true
+  getFile:
+    handler: bin/getFiles
+    events:
+      - http:
+          path: files
+          method: get
+          cors: true
+          request: 
+          parameters: 
+             querystrings:
+                id: true
 
 
 # Resources
