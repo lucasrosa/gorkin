@@ -29,14 +29,14 @@ package:
 # Functions
 functions:
   getFolders:
-    handler: bin/getFolders
+    handler: bin/getfolders
     events:
       - http:
           path: folders
           method: get
           cors: true
   getFile:
-    handler: bin/getFiles
+    handler: bin/getfiles
     events:
       - http:
           path: files

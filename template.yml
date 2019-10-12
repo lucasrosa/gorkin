@@ -5,7 +5,7 @@ Resources:
   getFolders:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: bin/getFolders
+      Handler: bin/getfolders
       Runtime: go1.x
       Environment:
         Variables:
@@ -19,7 +19,7 @@ Resources:
   getFiles:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: bin/getFiles
+      Handler: bin/getfiles
       Runtime: go1.x
       Environment:
         Variables:

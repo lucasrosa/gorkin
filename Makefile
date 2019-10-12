@@ -1,8 +1,8 @@
 .PHONY: build clean deploy
 
 build:
-	env GO111MODULE=on GOOS=linux go build -ldflags="-s -w" -o bin/getFolders src/adapters/primary/getFolders/*
-	env GO111MODULE=on GOOS=linux go build -ldflags="-s -w" -o bin/getFiles src/adapters/primary/getFiles/*
+	env GO111MODULE=on GOOS=linux go build -ldflags="-s -w" -o bin/getfolders src/adapters/primary/getfolders/*
+	env GO111MODULE=on GOOS=linux go build -ldflags="-s -w" -o bin/getfiles src/adapters/primary/getfiles/*
 test: 
 	env GO111MODULE=on go test ./... -cover
 	
