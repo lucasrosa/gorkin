@@ -11,3 +11,6 @@ clean:
 
 deploy: clean build
 	sls deploy --verbose
+
+local: build
+	sam local start-api
