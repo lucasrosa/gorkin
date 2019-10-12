@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/lucasrosa/gorkin/branch/master/graph/badge.svg)](https://codecov.io/gh/lucasrosa/gorkin)
 
 
-# Running locally with SAM Local
+## Running locally with SAM Local
 
 ### Install SAM Local
 ```npm install -g aws-sam-local```
