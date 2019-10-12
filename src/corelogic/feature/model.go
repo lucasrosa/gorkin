@@ -5,7 +5,7 @@ type Folder struct {
 }
 
 type Object struct {
-	ID       string             `json:"id"`
+	Key      string             `json:"key"`
 	Name     string             `json:"name"`
 	Type     string             `json:"type"`
 	Children map[string]*Object `json:"children"`

@@ -8,11 +8,11 @@ type FolderPrimaryPort interface {
 
 // FilesPrimaryPort is the entrypoint for the files
 type FilesPrimaryPort interface {
-	Get(id string) (string, error)
+	Get(key string) (string, error)
 }
 
 type ObjectSecondaryPort interface {
 	ListAllObjects() (Object, error)
 	ListObjects(fodler string) (Folder, error)
-	GetObjectTemporaryURL(id string) (string, error)
+	GetObjectTemporaryURL(key string) (string, error)
 }

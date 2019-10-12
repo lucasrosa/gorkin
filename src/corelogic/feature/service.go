@@ -28,6 +28,6 @@ func (foldersprimaryport *foldersPrimaryPort) Get(folder string) (Folder, error)
 	return foldersprimaryport.repo.ListObjects(folder)
 }
 
-func (filesprimaryport *filesPrimaryPort) Get(id string) (string, error) {
-	return filesprimaryport.repo.GetObjectTemporaryURL(id)
+func (filesprimaryport *filesPrimaryPort) Get(key string) (string, error) {
+	return filesprimaryport.repo.GetObjectTemporaryURL(key)
 }

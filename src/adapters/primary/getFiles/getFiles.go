@@ -32,10 +32,10 @@ type Response events.APIGatewayProxyResponse
 
 // PlaceOrder receives the request, processes it and returns a Response or an error
 func (a *getFilesAdapter) Handle(request events.APIGatewayProxyRequest) (Response, error) {
-	id := request.QueryStringParameters["id"]
+	key := request.QueryStringParameters["key"]
 
-	fmt.Println("id", id)
-	result, err := a.service.Get(id)
+	fmt.Println("key", key)
+	result, err := a.service.Get(key)
 
 	if err != nil {
 		return Response{StatusCode: 500}, err

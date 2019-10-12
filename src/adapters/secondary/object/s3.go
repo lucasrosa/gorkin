@@ -115,22 +115,22 @@ func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 	return treeObject, nil
 }
 
-func (r *folderRepository) GetObjectTemporaryURL(id string) (string, error) {
+func (r *folderRepository) GetObjectTemporaryURL(key string) (string, error) {
 	req, _ := r.awss3.GetObjectRequest(&s3.GetObjectInput{
 		Bucket: aws.String(os.Getenv("BUCKET_NAME")),
-		Key:    aws.String(id),
+		Key:    aws.String(key),
 	})
 
 	urlStr, err := req.Presign(15 * time.Minute)
 
 	if err != nil {
-		log.Println("Failed to sign request for object", id, "error:", err)
+		log.Println("Failed to sign request for object", key, "error:", err)
 	}
 
 	return urlStr, nil
 }
 
-func addChild(rootObject *feature.Object, id string, child string, grandchildren []string) {
+func addChild(rootObject *feature.Object, key string, child string, grandchildren []string) {
 	if rootObject.Children == nil {
 		rootObject.Children = make(map[string]*feature.Object)
 	}
@@ -139,39 +139,38 @@ func addChild(rootObject *feature.Object, id string, child string, grandchildren
 		if child != "" { // If the string is a folder, it will end in "/", and the last item in the split will be an empty string
 			if _, ok := rootObject.Children[child]; !ok { // Checks if this position in the array exists
 				rootObject.Children[child] = &feature.Object{
-					ID:   id,
+					Key:  key,
 					Name: child,
 					Type: "file",
 				}
-			} else if rootObject.Children[child].ID == "" {
-				rootObject.Children[child].ID = id
+			} else if rootObject.Children[child].Key == "" {
+				rootObject.Children[child].Key = key
 			}
 		}
 	} else {
 		if _, ok := rootObject.Children[child]; !ok { // Checks if this position in the array exists
 			rootObject.Children[child] = &feature.Object{
-				ID:   id,
+				Key:  key,
 				Name: child,
 				Type: "folder",
 			}
-		} else if rootObject.Children[child].ID == "" {
-			rootObject.Children[child].ID = id
+		} else if rootObject.Children[child].Key == "" {
+			rootObject.Children[child].Key = key
 		}
 
-		addChild(rootObject.Children[child], id, grandchildren[:1][0], grandchildren[1:])
+		addChild(rootObject.Children[child], key, grandchildren[:1][0], grandchildren[1:])
 	}
 }
 
 func convertToTreeObject(objects []*s3.Object) feature.Object {
-	rootObject := feature.Object{ID: "root", Name: "root", Type: "folder"}
+	rootObject := feature.Object{Key: "root", Name: "root", Type: "folder"}
 	for _, s3Object := range objects {
-		etag := strings.ReplaceAll(*s3Object.ETag, "\"", "")
 		if strings.Contains(*s3Object.Key, "/") {
 			components := strings.Split(*s3Object.Key, "/")
-			addChild(&rootObject, etag, components[0], components[1:])
+			addChild(&rootObject, *s3Object.Key, components[0], components[1:])
 		} else {
 			rootObject.Children[*s3Object.Key] = &feature.Object{
-				ID:   etag,
+				Key:  *s3Object.Key,
 				Name: *s3Object.Key,
 				Type: "file",
 			}
