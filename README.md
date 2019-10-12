@@ -13,7 +13,7 @@
 GET http://127.0.0.1:3000/folders?folder=folder1/
 
 
-### Generating pre-signed URL for S3 in go
+### Generating pre-signed URL for S3 in Go
 https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/s3-example-presigned-urls.html
 https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/go/example_code/s3
 

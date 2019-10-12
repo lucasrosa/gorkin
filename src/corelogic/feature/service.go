@@ -31,18 +31,3 @@ func (foldersprimaryport *foldersPrimaryPort) Get(folder string) (Folder, error)
 func (filesprimaryport *filesPrimaryPort) Get(id string) (string, error) {
 	return filesprimaryport.repo.GetObjectTemporaryURL(id)
 }
-
-// To be deprecated...
-type dbPort struct {
-	repo DatabaseSecondaryPort
-}
-
-func NewService(repo DatabaseSecondaryPort) FeaturePrimaryPort {
-	return &dbPort{
-		repo,
-	}
-}
-
-func (dbport *dbPort) GetAll() []Feature {
-	return dbport.repo.GetAll()
-}
