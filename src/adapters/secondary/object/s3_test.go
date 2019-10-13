@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/lucasrosa/gorkin/src/corelogic/feature"
 )
 
 func TestListChildrenWithNoItems(t *testing.T) {
@@ -57,51 +56,10 @@ func (s *s3Mock) ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output,
 	return &outputObject, nil
 }
 
-func TestListObjects(t *testing.T) {
-	mockedS3 := s3Mock{}
-	repo := &folderRepository{&mockedS3}
-
-	folder := "object2"
-
-	got, err := repo.ListObjects(folder)
-
-	if err != nil {
-		t.Error("No error expected. Got", err)
-	}
-
-	children := []string{"folder1", "folder2", "object1"}
-	expected := feature.Folder{
-		Children: children,
-	}
-
-	if !reflect.DeepEqual(got, expected) {
-		t.Error("Expected", expected, "got", got)
-	}
-}
-
 type s3MockWithError struct{}
 
 // ListObjectsV2 returns an error
 func (s *s3MockWithError) ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error) {
 	err := errors.New("Mock returning error")
 	return &s3.ListObjectsV2Output{}, err
-}
-
-func TestListObjectsWithError(t *testing.T) {
-	mockedS3 := s3MockWithError{}
-	repo := &folderRepository{&mockedS3}
-
-	folder := "object2"
-
-	_, err := repo.ListObjects(folder)
-
-	if err == nil {
-		t.Error("No error expected. Got", err)
-	}
-
-	expected := errors.New("Mock returning error")
-
-	if err.Error() != expected.Error() {
-		t.Error("Expected", expected, "got", err)
-	}
 }
