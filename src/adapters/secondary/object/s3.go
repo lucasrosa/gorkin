@@ -49,27 +49,6 @@ func newS3Session() (*s3.S3, error) {
 	return s3.New(sess), nil
 }
 
-// listChildren just gets the CommonPrefixes (folders) and Contents (files)
-// and returns them as a list of strings
-func listChildren(objects *s3.ListObjectsV2Output, folderName string) []string {
-	var children []string
-
-	// Get all folders
-	for _, doc := range objects.CommonPrefixes {
-		children = append(children, *doc.Prefix)
-	}
-
-	// Get all files
-	for _, doc := range objects.Contents {
-		// S3 lists the folder itself, so we have to remove it from the list
-		if *doc.Key != folderName {
-			children = append(children, *doc.Key)
-		}
-	}
-
-	return children
-}
-
 func (r *folderRepository) ListAllObjects() (feature.Object, error) {
 	input := &s3.ListObjectsV2Input{
 		Bucket:  aws.String(os.Getenv("BUCKET_NAME")),

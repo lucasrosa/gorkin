@@ -1,6 +1,6 @@
 # Gorkin
 [![Build Status](https://travis-ci.org/lucasrosa/gorkin.svg?branch=master)](https://travis-ci.org/lucasrosa/gorkin) 
-[![Go Report Card](https://goreportcard.com/badge/github.com/lucasrosa/gorkin)](https://goreportcard.com/report/github.com/lucasrosa/sgorkin) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/lucasrosa/gorkin)](https://goreportcard.com/report/github.com/lucasrosa/gorkin) 
 [![codecov](https://codecov.io/gh/lucasrosa/gorkin/branch/master/graph/badge.svg)](https://codecov.io/gh/lucasrosa/gorkin)
 
 

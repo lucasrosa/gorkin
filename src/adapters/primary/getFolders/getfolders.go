@@ -17,6 +17,7 @@ type getFoldersAdapter struct {
 	service feature.FolderPrimaryPort
 }
 
+// NewGetFoldersAdapter returns a folder adapter with its main service (primary port)
 func NewGetFoldersAdapter(service feature.FolderPrimaryPort) GetFoldersAdapter {
 	return &getFoldersAdapter{
 		service,

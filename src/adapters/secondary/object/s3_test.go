@@ -12,23 +12,6 @@ import (
 	"github.com/lucasrosa/gorkin/src/corelogic/feature"
 )
 
-func TestListChildrenWithNoItems(t *testing.T) {
-
-	outputObject := s3.ListObjectsV2Output{
-		CommonPrefixes: []*s3.CommonPrefix{},
-		Contents:       []*s3.Object{},
-	}
-
-	var expected []string
-
-	got := listChildren(&outputObject, "folder0")
-
-	if !reflect.DeepEqual(got, expected) {
-		t.Error("Expected", expected, "got", got)
-	}
-
-}
-
 type s3Mock struct{}
 
 func (s *s3Mock) GetObjectRequest(input *s3.GetObjectInput) (req *request.Request, output *s3.GetObjectOutput) {
@@ -38,8 +21,8 @@ func (s *s3Mock) GetObjectRequest(input *s3.GetObjectInput) (req *request.Reques
 // ListObjectsV2 returns an object with 2 folders and 2 files
 func (s *s3Mock) ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error) {
 	time0 := time.Now()
-	var size0 int64 = 0
-	storage_class0 := "STANDARD"
+	var size0 int64
+	storageClass0 := "STANDARD"
 	// Folders 1, 2 and 3 have the same ETag
 	etag1 := "\"d41d8cd98f00b204e9800998ecf8427e\""
 	key1 := "folder1/"
@@ -75,63 +58,63 @@ func (s *s3Mock) ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output,
 				Key:          &key1,
 				LastModified: &time0,
 				Size:         &size0,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag1,
 				Key:          &key2,
 				LastModified: &time0,
 				Size:         &size0,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag1,
 				Key:          &key3,
 				LastModified: &time0,
 				Size:         &size0,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag4,
 				Key:          &key4,
 				LastModified: &time0,
 				Size:         &size4,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag5,
 				Key:          &key5,
 				LastModified: &time0,
 				Size:         &size5,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag6,
 				Key:          &key6,
 				LastModified: &time0,
 				Size:         &size0,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag7,
 				Key:          &key7,
 				LastModified: &time0,
 				Size:         &size7,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag6,
 				Key:          &key8,
 				LastModified: &time0,
 				Size:         &size0,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 			&s3.Object{
 				ETag:         &etag9,
 				Key:          &key9,
 				LastModified: &time0,
 				Size:         &size9,
-				StorageClass: &storage_class0,
+				StorageClass: &storageClass0,
 			},
 		},
 	}
