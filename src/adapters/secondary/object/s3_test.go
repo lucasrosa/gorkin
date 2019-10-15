@@ -210,8 +210,29 @@ func TestListAllObjects(t *testing.T) {
 
 type s3MockWithError struct{}
 
+func (s *s3MockWithError) GetObjectRequest(input *s3.GetObjectInput) (req *request.Request, output *s3.GetObjectOutput) {
+	return &request.Request{}, &s3.GetObjectOutput{}
+}
+
 // ListObjectsV2 returns an error
 func (s *s3MockWithError) ListObjectsV2(*s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error) {
 	err := errors.New("Mock returning error")
 	return &s3.ListObjectsV2Output{}, err
+}
+
+func TestListObjectsWithError(t *testing.T) {
+	mockedS3 := s3MockWithError{}
+	repo := &folderRepository{&mockedS3}
+
+	_, err := repo.ListAllObjects()
+
+	if err == nil {
+		t.Error("No error expected. Got", err)
+	}
+
+	expected := errors.New("Mock returning error")
+
+	if err.Error() != expected.Error() {
+		t.Error("Expected", expected, "got", err)
+	}
 }

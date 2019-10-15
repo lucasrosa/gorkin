@@ -93,8 +93,6 @@ func addChild(rootObject *feature.Object, key string, child string, grandchildre
 					Name: child,
 					Type: "file",
 				}
-			} else if rootObject.Children[child].Key == "" {
-				rootObject.Children[child].Key = key
 			}
 		}
 	} else {
@@ -104,8 +102,6 @@ func addChild(rootObject *feature.Object, key string, child string, grandchildre
 				Name: child,
 				Type: "folder",
 			}
-		} else if rootObject.Children[child].Key == "" {
-			rootObject.Children[child].Key = key
 		}
 
 		addChild(rootObject.Children[child], key, grandchildren[:1][0], grandchildren[1:])
