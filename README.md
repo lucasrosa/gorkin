@@ -19,7 +19,7 @@ The application uses the following AWS services:
 The application is created with the [Serverless Framework](https://serverless.com/) to make it easier to manage and deploy. The entire architecture is described in the [serverless.yml](serverless.yml) file.
 
 #### Architecture diagram
-![Alt text](architecture.png?raw=true "Architecture")
+![Alt text](architecture.png?raw=true =572x707 "Architecture")
 
 ### Code Architecture
 The code follows the "Hexagonal Architecture" pattern, also know as "Ports and Adapters".
