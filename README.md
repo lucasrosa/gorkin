@@ -4,30 +4,54 @@
 [![codecov](https://codecov.io/gh/lucasrosa/gorkin/branch/master/graph/badge.svg)](https://codecov.io/gh/lucasrosa/gorkin)
 
 
-## Running locally with SAM Local
+Gorkin is a backend service that provides access to an S3 Bucket, listing the folders and giving temporary access to files.
 
-### Install SAM Local
+## Architecture 
+
+### Service Architecture
+
+The application uses the following AWS services:
+- AWS API Gateway for the REST API
+- AWS Lambda for the processing
+- AWS S3 to read the folders and files
+- AWS CloudWatch to save logs
+
+The application is created with the [Serverless Framework](https://serverless.com/) to make it easier to manage and deploy. The entire architecture is described in the [serverless.yml](serverless.yml) file.
+
+#### Architecture diagram
+![Alt text](architecture.png?raw=true "Architecture")
+
+### Code Architecture
+The code follows the "Hexagonal Architecture" pattern, also know as "Ports and Adapters".
+
+## How to run it
+### Requirements
+- An AWS account
+- AWS CLI
+- Go 1.12.x
+- Node 10.15.x (required for the Serverless Framework, which is intalled via NPM)
+- Serverless Framework >=1.28.0
+
+### Running locally with SAM Local
+
+#### Install SAM Local
 ```npm install -g aws-sam-local```
 
-### Build the Go Binary
+#### Build the Go Binary
 ```make build```
 
-### Start up sam local
+#### Start up sam local
 ```sam local start-api```
 
-### Call the endpoint
+#### Call the endpoint
 GET http://127.0.0.1:3000/folders?folder=folder1/
 
 
-### Generating pre-signed URL for S3 in Go
-https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/s3-example-presigned-urls.html
-https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/go/example_code/s3
 
-
-### Example of local request
+#### Example of local request
 GET http://127.0.0.1:3000/folders
 
-### Example of local response
+#### Example of local response
 ```
 {
     "id": "root",
@@ -95,3 +119,9 @@ GET http://127.0.0.1:3000/folders
     }
 }
 ```
+
+### Reference documentation
+#### Generating pre-signed URL for S3 in Go
+https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/s3-example-presigned-urls.html
+
+https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/go/example_code/s3
